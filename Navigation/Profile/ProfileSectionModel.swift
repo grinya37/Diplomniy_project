@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+protocol IProfileSectionModel {}
+
+struct PhotosModel: IProfileSectionModel {
+    var photos: [String] = []
+}

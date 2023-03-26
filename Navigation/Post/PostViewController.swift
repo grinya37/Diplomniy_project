@@ -13,13 +13,12 @@ class PostViewController: UIViewController {
     
     private var myPost: String?
     
-    
     init(myPost: String? = nil) {
         self.myPost = myPost
         super.init(nibName: nil, bundle: nil)
         title = myPost
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -32,7 +31,7 @@ class PostViewController: UIViewController {
         view.addSubview(topInsetView)
         makeBarItems()
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         topInsetView.backgroundColor = .white
@@ -40,14 +39,15 @@ class PostViewController: UIViewController {
                                     width: view.frame.width,
                                     height: view.safeAreaInsets.top)
     }
+    
     private func makeBarItems() {
-               let barItem = UIBarButtonItem(title: "👉", style: .plain, target: self, action: #selector(barItemAction))
-               navigationItem.rightBarButtonItem = barItem
-           }
-           @objc private func barItemAction() {
-               let infoVC = InfoViewController()
-               infoVC.title = "feedVC"
-               infoVC.modalPresentationStyle = .fullScreen
-               navigationController?.pushViewController(infoVC, animated: true)
-           }
+        let barItem = UIBarButtonItem(title: "👉", style: .plain, target: self, action: #selector(barItemAction))
+        navigationItem.rightBarButtonItem = barItem
+    }
+    @objc private func barItemAction() {
+        let infoVC = InfoViewController()
+        infoVC.title = "feedVC"
+        infoVC.modalPresentationStyle = .fullScreen
+        navigationController?.pushViewController(infoVC, animated: true)
+    }
 }

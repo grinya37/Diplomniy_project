@@ -7,18 +7,23 @@
 
 import UIKit
 
+protocol PostTableViewCellDelegate: AnyObject {
+    func addLikesPost()
+}
+
+
+    //weak var lokesDelegate: PostTableViewCellDelegate?
+
+
 final class PostTableViewCell: UITableViewCell {
-    
-    private var modelStar = Modelstar(author: "", image: "", likes: 1, views: 1, description: "")
-    private let screenWidth = UIScreen.main.bounds.width
-    private let inset: CGFloat = 16
+    var onLikeTapped: ((Int, IndexPath) -> ())?
     
     //MARK: - Add Author Label
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -37,7 +42,7 @@ final class PostTableViewCell: UITableViewCell {
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = UIColor(named: "descriptionColor")
+        label.textColor = UIColor.black
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -47,7 +52,7 @@ final class PostTableViewCell: UITableViewCell {
     private lazy var likesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.blue
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isUserInteractionEnabled = true
         return label
@@ -57,83 +62,177 @@ final class PostTableViewCell: UITableViewCell {
     private lazy var viewsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.blue
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
+    private let heartImage: UIImageView = {
+        let heartImage = UIImageView(image: UIImage(systemName: "suit.heart.fill"))
+        heartImage.tintColor = .systemGray
+        heartImage.contentMode = .scaleAspectFit
+        heartImage.translatesAutoresizingMaskIntoConstraints = false
+        return heartImage
+    }()
+    
+    
+//    private var addLikesButton: UIButton {
+//       let button = UIButton()
+//        button.addTarget(self, action: #selector(tapGalleryButtonAction), for: .touchUpInside)
+//        return button
+//    }
+    
+//    @objc private func tapGalleryButtonAction() {
+//        lokesDelegate?.addLikesPost()
+//
+//    }
+    
+    
+    var viewsCount: Int? {
+        didSet {
+            viewsLabel.text = "Views: \(viewsCount ?? 0 )"
+        }
+    }
+
+    var likesCount: Int? {
+        didSet {
+            likesLabel.text = "Likes: \(likesCount ?? 0 )"
+        }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(named: "backgroundColor")
+        backgroundColor = UIColor.black
         setupLayout()
-        setupGestures()
+        setupGesture()
     }
     
     required init?(coder: NSCoder) {
         fatalError()
     }
     
-    // MARK: - SetupGestures TapLikeLabelGesture
-    private func setupGestures() {
-        let tapLikeLabelGesture = UITapGestureRecognizer(target: self, action: #selector(likeAction))
-        likesLabel.addGestureRecognizer(tapLikeLabelGesture)
-    }
-    
-    // MARK: - LikeAction TapLikeLabelGesture
-    @objc private func likeAction() {
-        UIView.animate(withDuration: 0.5,
-                       delay: 0.0,
-                       usingSpringWithDamping: 1.0,
-                       initialSpringVelocity: 0.0,
-                       options: .curveEaseInOut) {
-            
-            self.modelStar.likes += 1
-            self.likesLabel.text = "Likes \(self.modelStar.likes)"
-        }
-    }
+    private var isHeartSelected = false
+    private var indexPath = IndexPath(index:0)
+   
     
     //MARK: - Setup Cell
-    func setupCell(model: Modelstar) {
-        modelStar = model
+    func configureCell(model: Modelstar, indexPath: IndexPath) {
         authorLabel.text = model.author
         myImageView.image = UIImage(named: model.image)
+        descriptionLabel.text = model.description
         likesLabel.text = "Likes: \(model.likes)"
         viewsLabel.text = "Views: \(model.views)"
-        descriptionLabel.text = model.description
+        isHeartSelected = model.isLiked
+        heartImage.tintColor = model.isLiked ? .systemPink : .systemGray
+        viewsCount = model.views
+        likesCount = model.likes
+        self.indexPath = indexPath
     }
+    
+    
+    private func setupGesture() {
+        likesLabel.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(likesLabelTapAction))
+        likesLabel.addGestureRecognizer(tapGesture)
+
+        let heartTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleHeartTap))
+        heartImage.addGestureRecognizer(heartTapGesture)
+        heartImage.isUserInteractionEnabled = true
+    }
+
+    @objc private func likesLabelTapAction() {
+        var likesCount = Int(likesLabel.text?.replacingOccurrences(of: "Likes: ", with: "") ?? "0") ?? 0
+        if isHeartSelected {
+            likesCount -= 1
+            UIView.animate(withDuration: 0.2) {
+                self.heartImage.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            } completion: { _ in
+                self.heartImage.transform = .identity
+            }
+            heartImage.tintColor = .systemGray
+        } else {
+            likesCount += 1
+            UIView.animate(withDuration: 0.2) {
+                self.heartImage.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+            } completion: { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.heartImage.transform = .identity
+                }
+            }
+            heartImage.tintColor = .systemPink
+        }
+        likesLabel.text = "Likes: \(likesCount)"
+        onLikeTapped?(likesCount, indexPath)
+        isHeartSelected.toggle()
+    }
+
+    @objc private func handleHeartTap() {
+        var likesCount = Int(likesLabel.text?.replacingOccurrences(of: "Likes: ", with: "") ?? "0") ?? 0
+        if isHeartSelected {
+            likesCount -= 1
+            UIView.animate(withDuration: 0.2) {
+                self.heartImage.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            } completion: { _ in
+                self.heartImage.transform = .identity
+            }
+            heartImage.tintColor = .systemGray
+        } else {
+            likesCount += 1
+            UIView.animate(withDuration: 0.2) {
+                self.heartImage.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+            } completion: { _ in
+                UIView.animate(withDuration: 0.2) {
+                    self.heartImage.transform = .identity
+                }
+            }
+            heartImage.tintColor = .systemPink
+        }
+        likesLabel.text = "Likes: \(likesCount)"
+        isHeartSelected.toggle()
+    }
+
+    
     
     //MARK: - Setup Layout
     private func setupLayout() {
         
-        contentView.addSubview(authorLabel)
-        contentView.addSubview(myImageView)
-        contentView.addSubview(descriptionLabel)
-        contentView.addSubview(likesLabel)
-        contentView.addSubview(viewsLabel)
-        
+        [myImageView,
+         authorLabel,
+         descriptionLabel,
+         likesLabel,
+         heartImage,
+         viewsLabel].forEach { contentView.addSubview( $0 ) }
+        contentView.backgroundColor = .systemGray5
+        contentView.layer.borderWidth = 0
+        let inset: CGFloat = 16
+
         NSLayoutConstraint.activate([
-            
             authorLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: inset),
             authorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
             authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
-            
+
             myImageView.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: inset),
-            myImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            myImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            myImageView.heightAnchor.constraint(equalToConstant: screenWidth),
-            
+            myImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: -0.5),
+            myImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0.5),
+            myImageView.heightAnchor.constraint(equalToConstant: 300),
+
             descriptionLabel.topAnchor.constraint(equalTo: myImageView.bottomAnchor, constant: inset),
             descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
             descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
-            
-            likesLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: inset),
-            likesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
-            likesLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset),
-            
+
+            likesLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 30),
+            likesLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 30),
+            likesLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -30),
+
+            heartImage.centerYAnchor.constraint(equalTo: likesLabel.centerYAnchor),
+            heartImage.leadingAnchor.constraint(equalTo: likesLabel.leadingAnchor, constant: -22),
+            heartImage.widthAnchor.constraint(equalToConstant: 20),
+            heartImage.heightAnchor.constraint(equalToConstant: 20),
+
             viewsLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: inset),
             viewsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
-            viewsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset)
-            
+            viewsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset),
         ])
     }
 }
+

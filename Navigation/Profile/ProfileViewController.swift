@@ -11,15 +11,21 @@ final class ProfileViewController: UIViewController {
     
     private var topInsetView = UIView()
     
-    private var modelStar: [[Any]] = [["Photos"], Modelstar.starArray()]
-
+    private var modelStarSections: [IProfileSectionModel] = [
+        PhotosModel(photos: ["Photos"]),
+        ModelStarList(list: Modelstar.starArray())
+    ]
+    
+    
     private lazy var myTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorColor = .black
+        tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         tableView.sectionHeaderTopPadding = .zero
         tableView.sectionHeaderHeight = .zero
         tableView.sectionFooterHeight = .zero
-        tableView.backgroundColor = UIColor(named: "backgroundColor")
+        tableView.backgroundColor = UIColor.systemGray6
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
@@ -28,17 +34,14 @@ final class ProfileViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "backgroundColor")
-        
-        //navigationItem.title = "post"
-        topInsetView.backgroundColor = .systemGray5
+        view.backgroundColor = UIColor.white
+        topInsetView.backgroundColor = .white
         view.addSubview(topInsetView)
         setupLayoutConstraints()
     }
-
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -47,15 +50,13 @@ final class ProfileViewController: UIViewController {
                                     height: view.safeAreaInsets.top)
     }
     
-    
-    // MARK: Изменена высота на 190, вместо 200, чтобы уменьшить расстояние до "Photos"
     private func setupLayoutConstraints() {
         
         view.addSubview(myTableView)
-        myTableView.tableHeaderView = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: myTableView.frame.width, height: 190))
-
+        myTableView.tableHeaderView = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: myTableView.frame.width, height: 210))
+        
         NSLayoutConstraint.activate([
-
+            
             myTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             myTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             myTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -65,48 +66,63 @@ final class ProfileViewController: UIViewController {
 }
 
 extension ProfileViewController: UITableViewDataSource {
-
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return modelStar.count
+        return modelStarSections.count
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        modelStar[section].count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
-            let cell: PhotosTableViewCell = tableView.dequeueReusableCell(withIdentifier: PhotosTableViewCell.identifier, for: indexPath) as! PhotosTableViewCell
-            cell.delegate = self
-            cell.layer.shadowColor = #colorLiteral(red: 0.2196078449, green: 0.5868554688, blue: 0.8549019694, alpha: 1).cgColor
-            cell.layer.shadowOpacity = 0.7
-            cell.layer.shadowOffset = CGSize(width: 4.0, height: 4.0)
-//            cell.galleryButton.addTarget(self, action: #selector(galleryButtonAction), for: .touchUpInside)
-            return cell
-
+        switch modelStarSections[section] {
+        case is PhotosModel:
+            return 1
+        case is ModelStarList:
+            let modelStarList = modelStarSections[section] as? ModelStarList
+            return (modelStarList?.list ?? []).count
         default:
-            if let model: Modelstar = modelStar[indexPath.section][indexPath.row] as? Modelstar {
-                let cell: PostTableViewCell = tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier, for: indexPath) as! PostTableViewCell
-                cell.setupCell(model: model)
-                return cell
-            } else { return UITableViewCell() }
+            return 0
         }
     }
-
     
-//    @objc private func galleryButtonAction() {
-//        let photosVC = PhotosViewController()
-//        navigationController?.pushViewController(photosVC, animated: true)
-//    }
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch modelStarSections[indexPath.section] {
+        case is PhotosModel:
+            let cell: PhotosTableViewCell = tableView.dequeueReusableCell(withIdentifier: PhotosTableViewCell.identifier, for: indexPath) as! PhotosTableViewCell
+            cell.delegate = self
+            cell.layer.shadowColor = UIColor.black.cgColor
+            cell.layer.shadowOpacity = 0.7
+            cell.layer.shadowOffset = CGSize(width: 4.0, height: 4.0)
+            return cell
+        case is ModelStarList:
+            let modelStarList = (modelStarSections[indexPath.section] as? ModelStarList)?.list
+            if let model: Modelstar = modelStarList?[indexPath.row] {
+                let cell: PostTableViewCell = tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier, for: indexPath) as! PostTableViewCell
+                cell.configureCell(model: model, indexPath: indexPath)
+                cell.onLikeTapped = { [ weak self ] likes, indexPath in
+                    self?.updateModelItem(likes: likes, indexPath: indexPath)
+                }
+                
+                return cell
+            } else { return UITableViewCell() }
+        default:
+            return UITableViewCell()
+        }
+    }
+    
+    func updateModelItem(likes: Int, indexPath: IndexPath) {
+        var list = (modelStarSections[indexPath.section] as? ModelStarList)?.list ?? []
+        var model = list[indexPath.row]
+        model.likes = likes
+        list[indexPath.row] = model
+        modelStarSections[indexPath.section] = ModelStarList(list: list)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return section == 0 ? ProfileHeaderView() : nil
-    }
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        return section == 0 ? ProfileHeaderView() : nil
+//    }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
@@ -122,13 +138,16 @@ extension ProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if indexPath.section == 1 && editingStyle == .delete {
-            modelStar[indexPath.section].remove(at: indexPath.row)
+            var list = (modelStarSections[indexPath.section] as? ModelStarList)?.list ?? []
+            list.remove(at: indexPath.row)
+            modelStarSections[indexPath.section] = ModelStarList(list: list)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if var model: Modelstar = modelStar[indexPath.section][indexPath.row] as? Modelstar {
+        let list = (modelStarSections[indexPath.section] as? ModelStarList)?.list
+        if var model: Modelstar = list?[indexPath.row] {
             let detailVC = DetailedViewController()
             model.views += 1
             detailVC.viewsLabel.text = "Views: \(model.views)"
@@ -142,17 +161,12 @@ extension ProfileViewController: UITableViewDelegate {
 }
 
 extension ProfileViewController: PhotosTableViewCellDelegate {
-    @objc internal func galleryButtonAction() {
+    @objc internal func galleryButtonActions() {
         let photosVC = PhotosViewController()
         navigationController?.pushViewController(photosVC, animated: true)
         
     }
 }
-//extension UIView {
-//    static var identifier: String {
-//        String(describing: self)
-//    }
-//}
 
 
 

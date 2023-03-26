@@ -8,10 +8,17 @@
 
 import UIKit
 
+protocol DetailedViewControllerDelegate: AnyObject {
+    func addActionLikes()
+}
+
 final class DetailedViewController: UIViewController {
     
-    private let screenWidth = UIScreen.main.bounds.width
+    
+    
 
+    weak var addLikesPostDelegate: DetailedViewControllerDelegate?
+    
     //MARK: - Add Scroll View
     private  lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -30,7 +37,7 @@ final class DetailedViewController: UIViewController {
     lazy var titleLabel: UILabel = {
         let label = UILabel(frame: .zero)
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.systemGray6
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -49,7 +56,7 @@ final class DetailedViewController: UIViewController {
     lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = UIColor(named: "descriptionColor")
+        label.textColor = UIColor.black
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -59,7 +66,7 @@ final class DetailedViewController: UIViewController {
     lazy var likesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isUserInteractionEnabled = true
         return label
@@ -69,15 +76,36 @@ final class DetailedViewController: UIViewController {
     lazy var viewsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor(named: "labelColor")
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    
+    
+    
+    //MARK: Сделать тап метод, который делает чтото
+    
+//    private var addOpenLikesPostButton: UIButton {
+//       var button = UIButton()
+//        button.addTarget(self, action: #selector(photoAction), for: .touchUpInside)
+//        return button
+//    }
+//
+//
+//    @objc private func photoAction() {
+//        addLikesPostDelegate?.addActionLikes()
+//    }
 
+    
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayoutConstraints()
-        view.backgroundColor = UIColor(named: "backgroundColor")
+        view.backgroundColor = UIColor.systemGray6
 
         title = "Description"
         navigationController?.setNavigationBarHidden(false, animated: true)
@@ -86,6 +114,8 @@ final class DetailedViewController: UIViewController {
     //MARK: - Setup Layout Constraints
     private func setupLayoutConstraints() {
 
+         let screenWidth = UIScreen.main.bounds.width
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         contentView.addSubview(titleLabel)

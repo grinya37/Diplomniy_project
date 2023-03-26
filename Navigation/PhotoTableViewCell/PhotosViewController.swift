@@ -16,7 +16,7 @@ final class PhotosViewController: UIViewController {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        view.backgroundColor = UIColor(named: "backgroundColor")
+        view.backgroundColor = UIColor.systemGray6
         view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -38,7 +38,7 @@ final class PhotosViewController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = #colorLiteral(red: 0, green: 0.5695073605, blue: 1, alpha: 1)
+        button.tintColor = .black
         button.alpha = 0
         button.addTarget(self, action: #selector(cancelAnimationButton), for: .touchUpInside)
         return button
@@ -46,7 +46,7 @@ final class PhotosViewController: UIViewController {
     
     //MARK: - Add FullImageView for animation
     private let fullImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "original1"))
+        let imageView = UIImageView(image: UIImage(named: "myOriginals"))
         imageView.contentMode = .scaleAspectFill
         imageView.layer.opacity = 0
         imageView.layer.masksToBounds = false
@@ -60,7 +60,7 @@ final class PhotosViewController: UIViewController {
         super.viewDidLoad()
         setupLayoutConstraints()
         setupCollectionView()
-        view.backgroundColor = UIColor(named: "backgroundColor")
+        view.backgroundColor = UIColor.systemGray6
     }
     
     //MARK: - Setup Collection View
@@ -104,7 +104,7 @@ final class PhotosViewController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         title = "Gallery"
         navigationController?.navigationBar.standardAppearance = UINavigationBarAppearance()
-        navigationController?.toolbar.backgroundColor = UIColor(named: "backgroundColor")
+        navigationController?.toolbar.backgroundColor = UIColor.black
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
     }
@@ -163,15 +163,16 @@ extension PhotosViewController: PhotoCellDelegate {
                        initialSpringVelocity: 0.0,
                        options: .curveEaseInOut) {
             
-            self.whiteView.layer.opacity = 0.8
-            self.fullImageView.layer.cornerRadius = 10
+            self.whiteView.layer.opacity = 0.9
+
+            self.fullImageView.layer.cornerRadius = 30
             self.fullImageView.layer.opacity = 1
             self.view.layoutIfNeeded()
             
         } completion: { _ in
             UIView.animate(withDuration: 0.3,
                            delay: 0.0) {
-                self.buttonCancelAnimation.layer.opacity = 1
+                self.buttonCancelAnimation.layer.opacity = 2
             }
         }
     }

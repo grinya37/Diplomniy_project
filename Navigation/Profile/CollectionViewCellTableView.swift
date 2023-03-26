@@ -10,9 +10,9 @@ import UIKit
 
 
 final class CollectionViewCellTableView: UICollectionViewCell {
-
+    
     // MARK: - Add ImageView
-    private lazy var imageView: UIImageView = {
+    private lazy var myImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFill
@@ -20,31 +20,31 @@ final class CollectionViewCellTableView: UICollectionViewCell {
         image.clipsToBounds = true
         return image
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor(named: "backgroundColor")
+        backgroundColor = UIColor.systemGray6
         setupLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - SetupImageModel
+    
+    // MARK: - Setup ImageModel
     func setupImageModel(_ image: ImageGallery) {
-        imageView.image = UIImage(named: image.image)
+        myImageView.image = UIImage(named: image.image)
     }
-
-    // MARK: - SetupLayout
+    
+    // MARK: - Setup Layout
     private func setupLayout() {
-        contentView.addSubview(imageView)
-
+        contentView.addSubview(myImageView)
+        
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            myImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
+            myImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            myImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
+            myImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
     }
 }
