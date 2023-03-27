@@ -7,18 +7,12 @@
 
 import UIKit
 
-protocol PostTableViewCellDelegate: AnyObject {
-    func addLikesPost()
-}
-
-
-    //weak var lokesDelegate: PostTableViewCellDelegate?
-
 
 final class PostTableViewCell: UITableViewCell {
     var onLikeTapped: ((Int, IndexPath) -> ())?
+    var onEyeTapped: ((Int, IndexPath) -> ())?
     
-    //MARK: - Add Author Label
+    //MARK: - Add authorLabel
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
@@ -28,7 +22,7 @@ final class PostTableViewCell: UITableViewCell {
         return label
     }()
     
-    //MARK: - Add Image View
+    //MARK: - Add myImageView
     private lazy var myImageView: UIImageView = {
         let view = UIImageView()
         view.backgroundColor = .black
@@ -38,55 +32,54 @@ final class PostTableViewCell: UITableViewCell {
         return view
     }()
     
-    //MARK: - Add Description Label
+    //MARK: - Add descriptionLabel
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = UIColor.black
+        label.textAlignment = .justified
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    //MARK: - Add Likes Label
+    //MARK: - Add likesLabel
     private lazy var likesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor.blue
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isUserInteractionEnabled = true
         return label
     }()
     
-    //MARK: - Add Views Label
+    //MARK: - Add viewsLabel
     private lazy var viewsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        label.textColor = UIColor.blue
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
+    //MARK: heartImage
     private let heartImage: UIImageView = {
         let heartImage = UIImageView(image: UIImage(systemName: "suit.heart.fill"))
-        heartImage.tintColor = .systemGray
+        heartImage.tintColor = .black
         heartImage.contentMode = .scaleAspectFit
         heartImage.translatesAutoresizingMaskIntoConstraints = false
         return heartImage
     }()
     
-    
-//    private var addLikesButton: UIButton {
-//       let button = UIButton()
-//        button.addTarget(self, action: #selector(tapGalleryButtonAction), for: .touchUpInside)
-//        return button
-//    }
-    
-//    @objc private func tapGalleryButtonAction() {
-//        lokesDelegate?.addLikesPost()
-//
-//    }
-    
+    //MARK: eyeImage
+    private let eyeImage: UIImageView = {
+        let heartImage = UIImageView(image: UIImage(systemName: "eye.fill"))
+        heartImage.tintColor = .black
+        heartImage.contentMode = .scaleAspectFit
+        heartImage.translatesAutoresizingMaskIntoConstraints = false
+        return heartImage
+    }()
+ 
     
     var viewsCount: Int? {
         didSet {
@@ -100,11 +93,12 @@ final class PostTableViewCell: UITableViewCell {
         }
     }
     
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor.black
         setupLayout()
-        setupGesture()
+        setupTapGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -112,10 +106,11 @@ final class PostTableViewCell: UITableViewCell {
     }
     
     private var isHeartSelected = false
+    private var isEyeSelected = false
     private var indexPath = IndexPath(index:0)
    
     
-    //MARK: - Setup Cell
+    //MARK: configureCell
     func configureCell(model: Modelstar, indexPath: IndexPath) {
         authorLabel.text = model.author
         myImageView.image = UIImage(named: model.image)
@@ -123,6 +118,7 @@ final class PostTableViewCell: UITableViewCell {
         likesLabel.text = "Likes: \(model.likes)"
         viewsLabel.text = "Views: \(model.views)"
         isHeartSelected = model.isLiked
+        isEyeSelected = model.eyeViews
         heartImage.tintColor = model.isLiked ? .systemPink : .systemGray
         viewsCount = model.views
         likesCount = model.likes
@@ -130,13 +126,14 @@ final class PostTableViewCell: UITableViewCell {
     }
     
     
-    private func setupGesture() {
+    //MARK: setupTapGesture
+    private func setupTapGesture() {
         likesLabel.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(likesLabelTapAction))
-        likesLabel.addGestureRecognizer(tapGesture)
+        let unshapeAgesture = UITapGestureRecognizer(target: self, action: #selector(likesLabelTapAction))
+        likesLabel.addGestureRecognizer(unshapeAgesture)
 
-        let heartTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleHeartTap))
-        heartImage.addGestureRecognizer(heartTapGesture)
+        let gestureTap = UITapGestureRecognizer(target: self, action: #selector(handleHeartTap))
+        heartImage.addGestureRecognizer(gestureTap)
         heartImage.isUserInteractionEnabled = true
     }
 
@@ -192,8 +189,7 @@ final class PostTableViewCell: UITableViewCell {
     }
 
     
-    
-    //MARK: - Setup Layout
+    //MARK: - setupLayout
     private func setupLayout() {
         
         [myImageView,
@@ -201,6 +197,7 @@ final class PostTableViewCell: UITableViewCell {
          descriptionLabel,
          likesLabel,
          heartImage,
+         eyeImage,
          viewsLabel].forEach { contentView.addSubview( $0 ) }
         contentView.backgroundColor = .systemGray5
         contentView.layer.borderWidth = 0
@@ -229,6 +226,12 @@ final class PostTableViewCell: UITableViewCell {
             heartImage.widthAnchor.constraint(equalToConstant: 20),
             heartImage.heightAnchor.constraint(equalToConstant: 20),
 
+            eyeImage.centerYAnchor.constraint(equalTo: viewsLabel.centerYAnchor),
+            eyeImage.leadingAnchor.constraint(equalTo: viewsLabel.leadingAnchor, constant: -22),
+            
+            eyeImage.widthAnchor.constraint(equalToConstant: 20),
+            eyeImage.heightAnchor.constraint(equalToConstant: 20),
+            
             viewsLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: inset),
             viewsLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
             viewsLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -inset),

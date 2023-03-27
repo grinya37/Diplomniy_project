@@ -4,19 +4,18 @@
 //
 //  Created by Николай Гринько on 28.02.2023.
 //
-
-
+//
 import UIKit
 
-protocol PhotoCellDelegate: AnyObject {
+protocol IPhotoCellDelegate: AnyObject {
     func tapAction(photo: UIImage)
-//    func cancelAnimationButton()
+   
 }
 final class CollectionViewCell: UICollectionViewCell {
     
-    weak var buttonAllPhotoCellDelegate: PhotoCellDelegate?
+    weak var buttonAllPhotoCellDelegate: IPhotoCellDelegate?
     
-    //MARK: - Add Image View
+    //MARK: Add collectionImageView
     lazy var collectionImageView: UIImageView = {
         let image = UIImageView(frame: .zero)
         image.contentMode = .scaleAspectFill
@@ -30,15 +29,15 @@ final class CollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         backgroundColor = UIColor.systemGray6
         setupLayout()
-        setupGestures()
+        gustomizeGestureTap()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - SetupGestures
-    private func setupGestures() {
+    // MARK: gustomizeGestureTap
+    private func gustomizeGestureTap() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(photoAction))
         collectionImageView.isUserInteractionEnabled = true
         collectionImageView.addGestureRecognizer(tapGesture)
@@ -47,12 +46,12 @@ final class CollectionViewCell: UICollectionViewCell {
     func setupImageModel(_ image: ImageGallery) {
         collectionImageView.image = UIImage(named: image.image)
     }
-    // MARK: - PhotoAction
+    // MARK: photoAction
     @objc private func photoAction() {
         buttonAllPhotoCellDelegate?.tapAction(photo: collectionImageView.image!)
     }
     
-    //MARK: - Setup Layout
+    //MARK: setupLayout
     private func setupLayout() {
         contentView.addSubview(collectionImageView)
         

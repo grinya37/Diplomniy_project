@@ -5,6 +5,7 @@
 //  Created by Николай Гринько on 20.02.2023.
 //
 
+
 import UIKit
 
 final class LogInViewController: UIViewController {
@@ -16,22 +17,22 @@ final class LogInViewController: UIViewController {
     //login - volf@yandex.ru
     //password - grinya37
 
-    //MARK: - Scroll View
+    //MARK: scrollView
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
 
-    //MARK: - Content View
+    //MARK: contentView
     private lazy var contentView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.systemGray6
+        view.backgroundColor = UIColor.white
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    //MARK: - Logo Image View
+    //MARK: myLogoImageView
     private lazy var myLogoImageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "logo")
@@ -41,7 +42,7 @@ final class LogInViewController: UIViewController {
         return image
     }()
 
-    //MARK: - Add StackView
+    //MARK: Add stackView
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +56,7 @@ final class LogInViewController: UIViewController {
         return stackView
     }()
 
-    //MARK: - Email Text Fild
+    //MARK: emailTextFild
     private lazy var emailTextFild: UITextField = {
         let textFild = UITextField()
         textFild.layer.borderColor = UIColor.lightGray.cgColor
@@ -74,7 +75,7 @@ final class LogInViewController: UIViewController {
         return textFild
     }()
 
-    //MARK: - Password Text Fild
+    //MARK: passwordTextFild
     private lazy var passwordTextFild: UITextField = {
         let textFild = UITextField()
         textFild.layer.borderColor = UIColor.lightGray.cgColor
@@ -105,7 +106,7 @@ final class LogInViewController: UIViewController {
         return textFild
     }()
 
-    //MARK: - Login Button
+    //MARK: loginButton
     private lazy var loginButton: UIButton = {
         let button = UIButton()
         button.setTitle("Log in", for: .normal)
@@ -118,7 +119,7 @@ final class LogInViewController: UIViewController {
         return button
     }()
 
-    //MARK: - Add AlertLabel
+    //MARK: alertLabel
     private lazy var alertLabel: UILabel = {
         let labelAlert = UILabel()
         labelAlert.translatesAutoresizingMaskIntoConstraints = false
@@ -146,28 +147,28 @@ final class LogInViewController: UIViewController {
         hideKeyboardTapped()
     }
 
-    //MARK: - Keyboard Observers
+    //MARK: Keyboard Observers
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         notificationCenter.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(keyboardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    //MARK: - Unsubscribe From Observers
+    //MARK: Unsubscribe From Observers
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         notificationCenter.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    //MARK: - IsValidEmail
+    //MARK: IsValidEmail
     private func validEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         return emailPred.evaluate(with: email)
     }
 
-    //MARK: - IsValidPassword
+    //MARK: IsValidPassword
     private func validPassword(_ password: String) -> Bool {
         let passwordRegEx = "^(?=.*[a-z])(?=.*[$@$#!%*?&])[A-Za-z\\d$@$#!%*?&]{8,64}"
         let passwordPred = NSPredicate(format:"SELF MATCHES %@", passwordRegEx)
@@ -175,7 +176,7 @@ final class LogInViewController: UIViewController {
     }
 
     
-    //MARK: - Action Login Button Show ProfileViewController
+    //MARK: Action Login Button
     @objc private func myEnterDataButton () {
         if emailTextFild.text == "" || emailTextFild.text == "" {
             let animation = CABasicAnimation(keyPath: "position")
@@ -186,16 +187,14 @@ final class LogInViewController: UIViewController {
             animation.toValue = NSValue(cgPoint: CGPoint(x: stackView.center.x + 10, y: stackView.center.y))
             stackView.layer.add(animation, forKey: "data")
             emailTextFild.attributedPlaceholder = NSAttributedString(string: emailTextFild.placeholder ?? "",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+                           attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
             passwordTextFild.attributedPlaceholder = NSAttributedString(string: passwordTextFild.placeholder ?? "",
-                                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+                              attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
 
         }  else {
             stackView.layer.removeAnimation(forKey: "data")
-
         }
 
-        
         if emailTextFild.text != "" && passwordTextFild.text == "" {
             let animation = CABasicAnimation(keyPath: "data")
             animation.duration = 0.07
@@ -204,24 +203,23 @@ final class LogInViewController: UIViewController {
             animation.fromValue = NSValue(cgPoint: CGPoint(x: stackView.center.x - 10, y: stackView.center.y))
             animation.toValue = NSValue(cgPoint: CGPoint(x: stackView.center.x + 10, y: stackView.center.y))
             stackView.layer.add(animation, forKey: "data")
-            passwordTextFild.attributedPlaceholder = NSAttributedString(string: passwordTextFild.placeholder ?? "",
-                                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+            passwordTextFild.attributedPlaceholder = NSAttributedString(string: passwordTextFild.placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
         }
-        // Проверка на валидацию email
+        //MARK: Validation Check email
         if validEmail(emailTextFild.text!) == false && emailTextFild.text != ""  {
             emailTextFild.text = ""
             emailTextFild.attributedPlaceholder = NSAttributedString(string: "Email is incorrect",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+                           attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
         }
         
-        // Проверка на введеный email
+        //MARK: Validation Check email and password
         if validPassword(passwordTextFild.text!) && emailTextFild.text == ""  {
             emailTextFild.text = ""
             emailTextFild.attributedPlaceholder = NSAttributedString(string: " Введите Email",
-                                                                     attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+                           attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
         }
         
-        // Проверка на определенное количество вводимых символов пароля
+        //MARK: Checking for the number of entered password characters
         if passwordTextFild.text!.count < 6 && passwordTextFild.text != "" {
             alertLabel.text = alertLabel.text
             alertLabel.isHidden = false
@@ -240,15 +238,14 @@ final class LogInViewController: UIViewController {
             alert.addAction(okAction)
             present(alert, animated: true)
         }
-        // Проверка на валидацию password
+        //MARK: Validation Check password
 //        if validPassword(passwordTextFild.text!) == false && passwordTextFild.text != ""  {
 //            passwordTextFild.text = ""
-//            passwordTextFild.attributedPlaceholder = NSAttributedString(string: " Entered incorrectly Password",
-//                                                                        attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+//            passwordTextFild.attributedPlaceholder = NSAttributedString(string: " Entered incorrectly Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
 //        }
     }
 
-    //MARK: - Keyboard Display
+    //MARK: Keyboard display
     @objc private func keyboardShow(notification: NSNotification) {
 
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
@@ -258,13 +255,13 @@ final class LogInViewController: UIViewController {
         }
     }
 
-    //MARK: - Hiding the Keyboard
+    //MARK: Hiding the keyboard
     @objc private func keyboardHide() {
         scrollView.contentOffset = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
 
-    //MARK: - SetupLayout
+    //MARK: SetupLayout
     private func setupLayout() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -313,23 +310,23 @@ final class LogInViewController: UIViewController {
     }
 }
 
-//MARK: - Extension UITextFieldDelegate
+//MARK: Extension UITextFieldDelegate
 extension LogInViewController: UITextFieldDelegate {
 
-    //MARK: - Keyboard Processing
+    //MARK: Keyboard processing
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true
     }
 
-    //MARK: - Hide Keyboard
+    //MARK: Hide keyboard
     func hideKeyboardTapped() {
         let press: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard))
         press.cancelsTouchesInView = false
         view.addGestureRecognizer(press)
     }
 
-    //MARK: - Remove Keyboard
+    //MARK: Remove keyboard
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }

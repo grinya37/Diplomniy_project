@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 
-final class CollectionViewCellTableView: UICollectionViewCell {
+final class CollectionViewCellT: UICollectionViewCell {
     
-    // MARK: - Add ImageView
+    // MARK: - myImageView
     private lazy var myImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
@@ -31,12 +31,12 @@ final class CollectionViewCellTableView: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup ImageModel
+    // MARK: setupImageModel
     func setupImageModel(_ image: ImageGallery) {
         myImageView.image = UIImage(named: image.image)
     }
     
-    // MARK: - Setup Layout
+    // MARK: setupLayout
     private func setupLayout() {
         contentView.addSubview(myImageView)
         

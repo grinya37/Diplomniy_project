@@ -4,16 +4,16 @@
 //
 //  Created by Николай Гринько on 30.01.2023.
 //
-
 import UIKit
+
 
 class FeedViewController: UIViewController {
     
     private let  myPost = Post(title: "My post")
     
-    
     private var topInsetView = UIView()
     
+    //MARK: Add stackView
     private let stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.backgroundColor = .systemGray4
@@ -26,7 +26,7 @@ class FeedViewController: UIViewController {
     }()
     
     
-    
+    //MARK: viewPostButton
     private let viewPostButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
         button.setTitle("Посмотреть пост", for: .normal)
@@ -34,6 +34,7 @@ class FeedViewController: UIViewController {
         return button
     }()
     
+    //MARK: setupButton
     private func setupButton() {
         view.addSubview(viewPostButton)
         viewPostButton.center = view.center
@@ -44,7 +45,6 @@ class FeedViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         navigationItem.title = "Feed"
-        
         topInsetView.backgroundColor = .white
         view.addSubview(topInsetView)
         setupStackView()
@@ -55,9 +55,9 @@ class FeedViewController: UIViewController {
         topInsetView.frame = CGRect(x: 0, y: 0,
                                     width: view.frame.width,
                                     height: view.safeAreaInsets.top)
-        
     }
     
+    //MARK: setupStackView
     private func setupStackView() {
         view.addSubview(stackView)
         view.addSubview(viewPostButton)
@@ -65,11 +65,13 @@ class FeedViewController: UIViewController {
         viewPostButton.addTarget(self, action: #selector(tapEditAction), for: .touchUpInside)
     }
     
+    //MARK: tapShowAction
     @objc func tapShowAction() {
         let postVC = PostViewController(myPost: myPost.title)
         navigationController?.pushViewController(postVC, animated: true)
     }
     
+    //MARK: tapEditAction
     @objc func tapEditAction() {
         let postVC = PostViewController(myPost: myPost.title)
         navigationController?.pushViewController(postVC, animated: true)

@@ -4,8 +4,8 @@
 //
 //  Created by Николай Гринько on 31.01.2023.
 //
-
 import UIKit
+
 
 class InfoViewController: UIViewController {
     
@@ -26,7 +26,7 @@ class InfoViewController: UIViewController {
                                     height: view.safeAreaInsets.top)
     }
     
-    
+    //MARK: backAction
     @objc private func backAction() {
         let alertController = UIAlertController(title: "Заголовок", message: "Описание", preferredStyle: .alert)
         let acrtion1 = UIAlertAction(title: "Default", style: .default) { (action:UIAlertAction) in

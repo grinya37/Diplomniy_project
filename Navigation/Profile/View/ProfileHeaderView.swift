@@ -4,15 +4,12 @@
 //
 //  Created by Николай Гринько on 07.02.2023.
 //
-
+//
 import UIKit
 
-
 private var statusText: String?
-private let inset: CGFloat = 16
 
 class ProfileHeaderView: UIView {
-    
     
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
@@ -58,7 +55,6 @@ class ProfileHeaderView: UIView {
         textField.clearButtonMode = .whileEditing
         textField.layer.borderWidth = 1.0
         textField.layer.borderColor = UIColor.black.cgColor
-        //textField.delegate = self
         textField.backgroundColor = .white
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(ProfileHeaderView.self, action: #selector(textFieldAction), for: .touchUpInside)
@@ -112,11 +108,12 @@ class ProfileHeaderView: UIView {
     
     @objc private func avatarButtomActionADD(selector: UIButton) {
         if statusTextField.text == "" {
-            statusTextField.attributedPlaceholder = NSAttributedString(string: "Not empty...", attributes:[NSAttributedString.Key.foregroundColor: UIColor.blue])
+            statusTextField.attributedPlaceholder = NSAttributedString(string: "Not empty...",
+                              attributes:[NSAttributedString.Key.foregroundColor: UIColor.blue])
             
         } else if statusTextField.text != "" {
             statusTextField.attributedPlaceholder = NSAttributedString(string: "Set your status...",
-                                                                       attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
+                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.black])
             statusLabel.text = statusTextField.text
         }
     }
@@ -141,6 +138,8 @@ class ProfileHeaderView: UIView {
     private var heightImage = NSLayoutConstraint()
     
     private func setupLayoutConstraints() {
+        let inset: CGFloat = 16
+        
         addSubview(avatarImageView)
         addSubview(setStatusButton)
         addSubview(fullNamedLabel)
@@ -157,7 +156,7 @@ class ProfileHeaderView: UIView {
             topImage, leadingImage, widthImage, heightImage,
             
             fullNamedLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 27),
-            fullNamedLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 130),
+            fullNamedLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 150),
             fullNamedLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -inset),
             fullNamedLabel.heightAnchor.constraint(equalToConstant: 20),
             
@@ -199,7 +198,6 @@ class ProfileHeaderView: UIView {
         
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseInOut) {
             self.whiteView.alpha = 0.8
-            //self.avatarImageView.layer.cornerRadius = 30
             self.avatarImageView.layer.cornerRadius = UIScreen.main.bounds.width / 2
             self.topImage.constant = 100
             self.leadingImage.constant = 0

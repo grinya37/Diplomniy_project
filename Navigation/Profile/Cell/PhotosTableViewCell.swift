@@ -7,18 +7,18 @@
 
 import UIKit
 
-// MARK: - Protocol PhotosTableViewCellDelegate
-protocol PhotosTableViewCellDelegate: AnyObject {
+// MARK: - Protocol IPhotosTableViewCellDelegate
+protocol IPhotosTableViewCellDelegate: AnyObject {
     func galleryButtonActions()
 }
 
 final class PhotosTableViewCell: UITableViewCell {
     
-    weak var delegate: PhotosTableViewCellDelegate?
+    weak var delegate: IPhotosTableViewCellDelegate?
     private let photoGallery = ImageGallery.setupGallery()
     
     
-    // MARK: - CollectionView HorizontalView
+    // MARK: collectionView (HorizontalView)
     private lazy var collectionView: UICollectionView = {
         let layoutCollection = UICollectionViewFlowLayout()
         layoutCollection.scrollDirection = .horizontal
@@ -27,11 +27,11 @@ final class PhotosTableViewCell: UITableViewCell {
         collectionView.backgroundColor = UIColor.systemGray6
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(CollectionViewCellTableView.self, forCellWithReuseIdentifier: CollectionViewCellTableView.identifier)
+        collectionView.register(CollectionViewCellT.self, forCellWithReuseIdentifier: CollectionViewCellT.identifier)
         return collectionView
     }()
     
-    //MARK: - Add PhotosLabel
+    //MARK: photosLabel
     private lazy var photosLabel: UILabel = {
         let label = UILabel()
         label.text = "Photos"
@@ -41,7 +41,7 @@ final class PhotosTableViewCell: UITableViewCell {
         return label
     }()
     
-    //MARK: - Add ArrowButton
+    //MARK: arrowButton
     private lazy var arrowButton: UIButton = {
         var button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -60,12 +60,12 @@ final class PhotosTableViewCell: UITableViewCell {
         fatalError()
     }
     
-    //MARK: - GalleryButtonAction
+    //MARK: galleryButtonAction
     @objc private func galleryButtonAction() {
         delegate?.galleryButtonActions()
     }
     
-    //MARK: - Setup Layout Constraints
+    //MARK: setupLayoutConstraints
     private func setupLayoutConstraints() {
         
         contentView.addSubview(collectionView)
@@ -91,14 +91,14 @@ final class PhotosTableViewCell: UITableViewCell {
     }
 }
 
-// MARK: - Extension UICollectionViewDataSource
+// MARK: extension UICollectionViewDataSource
 extension PhotosTableViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return photoGallery.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCellTableView.identifier, for: indexPath) as? CollectionViewCellTableView else { return CollectionViewCellTableView() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCellT.identifier, for: indexPath) as? CollectionViewCellT else { return CollectionViewCellT() }
         let photoGallery = photoGallery[indexPath.item]
         cell.backgroundColor = UIColor.systemGray6
         cell.setupImageModel(photoGallery)
@@ -106,7 +106,7 @@ extension PhotosTableViewCell: UICollectionViewDataSource {
     }
 }
 
-// MARK: - Extension UICollectionViewDelegateFlowLayout
+// MARK: extension UICollectionViewDelegateFlowLayout
 extension PhotosTableViewCell: UICollectionViewDelegateFlowLayout {
     var sideInset: CGFloat { return 8 }
     

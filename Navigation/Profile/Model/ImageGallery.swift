@@ -5,7 +5,7 @@
 //  Created by Николай Гринько on 28.02.2023.
 //
 
-import UIKit
+import Foundation
 
 struct ImageGallery {
     var image: String

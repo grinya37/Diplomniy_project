@@ -26,15 +26,14 @@ class PostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .yellow
-        navigationItem.title = "post"
-        topInsetView.backgroundColor = .white
+        navigationItem.title = "Пока здесь пусто"
         view.addSubview(topInsetView)
         makeBarItems()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        topInsetView.backgroundColor = .white
+        topInsetView.backgroundColor = .systemGray5
         topInsetView.frame = CGRect(x: 0, y: 0,
                                     width: view.frame.width,
                                     height: view.safeAreaInsets.top)

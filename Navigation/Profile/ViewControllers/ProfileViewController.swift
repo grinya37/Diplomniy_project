@@ -9,14 +9,13 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
-    private var topInsetView = UIView()
-    
     private var modelStarSections: [IProfileSectionModel] = [
         PhotosModel(photos: ["Photos"]),
         ModelStarList(list: Modelstar.starArray())
     ]
     
     
+    //MARK: myTableView
     private lazy var myTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.separatorStyle = .singleLine
@@ -28,7 +27,7 @@ final class ProfileViewController: UIViewController {
         tableView.backgroundColor = UIColor.systemGray6
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.rowHeight = UITableView.automaticDimension
+        tableView.rowHeight = UITableView.noIntrinsicMetric
         tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: PhotosTableViewCell.identifier)
         tableView.register(PostTableViewCell.self, forCellReuseIdentifier: PostTableViewCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -37,19 +36,12 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.white
-        topInsetView.backgroundColor = .white
-        view.addSubview(topInsetView)
+        view.backgroundColor = .white
+        navigationItem.title = "Profile"
         setupLayoutConstraints()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        topInsetView.frame = CGRect(x: 0, y: 0,
-                                    width: view.frame.width,
-                                    height: view.safeAreaInsets.top)
-    }
-    
+    //MARK: setupLayoutConstraints
     private func setupLayoutConstraints() {
         
         view.addSubview(myTableView)
@@ -65,6 +57,7 @@ final class ProfileViewController: UIViewController {
     }
 }
 
+//MARK: Extension UITableViewDataSource
 extension ProfileViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -120,16 +113,12 @@ extension ProfileViewController: UITableViewDataSource {
         return UITableView.automaticDimension
     }
     
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        return section == 0 ? ProfileHeaderView() : nil
-//    }
-    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return UITableView.automaticDimension
     }
 }
 
-//MARK: - Extension UITableViewDelegate
+//MARK: Extension UITableViewDelegate
 extension ProfileViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -152,15 +141,16 @@ extension ProfileViewController: UITableViewDelegate {
             model.views += 1
             detailVC.viewsLabel.text = "Views: \(model.views)"
             detailVC.likesLabel.text = "Likes: \(model.likes)"
-            detailVC.detailedImageView.image = UIImage(named: model.image)
+            detailVC.myImageView.image = UIImage(named: model.image)
             detailVC.descriptionLabel.text = model.description
-            detailVC.titleLabel.text = model.author
+            detailVC.authorLabel.text = model.author
             navigationController?.pushViewController(detailVC, animated: true)
         }
     }
 }
 
-extension ProfileViewController: PhotosTableViewCellDelegate {
+//MARK: Extension IPhotosTableViewCellDelegate
+extension ProfileViewController: IPhotosTableViewCellDelegate {
     @objc internal func galleryButtonActions() {
         let photosVC = PhotosViewController()
         navigationController?.pushViewController(photosVC, animated: true)

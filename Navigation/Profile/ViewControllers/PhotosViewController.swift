@@ -4,15 +4,14 @@
 //
 //  Created by Николай Гринько on 28.02.2023.
 //
-
-
 import UIKit
+
 
 final class PhotosViewController: UIViewController {
     
     private let photoGallery: [ImageGallery] = ImageGallery.setupGallery()
     
-    //MARK: - Add Collection View
+    //MARK: Add collectionView
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -22,7 +21,7 @@ final class PhotosViewController: UIViewController {
         return view
     }()
     
-    //MARK: - Add BlackView for animation
+    //MARK: Add whiteView
     private let whiteView: UIView = {
         let view = UIView()
         view.frame = UIScreen.main.bounds
@@ -33,7 +32,7 @@ final class PhotosViewController: UIViewController {
         return view
     }()
     
-    //MARK: - Add ButtonCancelAnimation
+    //MARK: Add buttonCancelAnimation
     private lazy var buttonCancelAnimation: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -44,7 +43,7 @@ final class PhotosViewController: UIViewController {
         return button
     }()
     
-    //MARK: - Add FullImageView for animation
+    //MARK: Add fullImageView for animation
     private let fullImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "myOriginals"))
         imageView.contentMode = .scaleAspectFill
@@ -55,7 +54,6 @@ final class PhotosViewController: UIViewController {
         return imageView
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayoutConstraints()
@@ -63,13 +61,13 @@ final class PhotosViewController: UIViewController {
         view.backgroundColor = UIColor.systemGray6
     }
     
-    //MARK: - Setup Collection View
+    //MARK: Add setupCollectionView
     private func setupCollectionView() {
         collectionView.dataSource = self
         collectionView.delegate = self
     }
     
-    //MARK: - Setup Layout Constraints
+    //MARK: setupLayoutConstraints
     private func setupLayoutConstraints() {
         view.addSubview(collectionView)
         view.addSubview(whiteView)
@@ -99,7 +97,7 @@ final class PhotosViewController: UIViewController {
         showNavigationBar()
     }
     
-    //MARK: - Show Navigation Bar
+    //MARK: showNavigationBar
     private func showNavigationBar() {
         navigationController?.setNavigationBarHidden(false, animated: true)
         title = "Gallery"
@@ -110,7 +108,7 @@ final class PhotosViewController: UIViewController {
     }
 }
 
-//MARK: - Extension UICollectionViewDataSource
+//MARK: Extension UICollectionViewDataSource
 extension PhotosViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         photoGallery.count
@@ -126,7 +124,7 @@ extension PhotosViewController: UICollectionViewDataSource {
     }
 }
 
-//MARK: - Extension UICollectionViewDelegateFlowLayout
+//MARK: Extension UICollectionViewDelegateFlowLayout
 extension PhotosViewController: UICollectionViewDelegateFlowLayout {
     private var sideInset: CGFloat { return 8 }
     private var elementCount: CGFloat { return 3}
@@ -150,8 +148,8 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - Extension PhotoCellDelegate
-extension PhotosViewController: PhotoCellDelegate {
+// MARK: Extension IPhotoCellDelegate
+extension PhotosViewController: IPhotoCellDelegate {
     func tapAction(photo: UIImage) {
         self.fullImageView.image = photo
         self.fullImageView.isUserInteractionEnabled = true
