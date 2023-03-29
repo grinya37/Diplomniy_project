@@ -6,7 +6,6 @@
 //
 import UIKit
 
-
 final class DetailedViewController: UIViewController {
     
     //MARK: Add scrollView
